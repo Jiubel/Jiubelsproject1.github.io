@@ -118,9 +118,11 @@ Finally, I ran commands again on the honeypot and confirmed that Wazuh generated
 ## 📊 Results
 - Simulated attacker activity using SSH  
 - Captured commands with Cowrie  
-- Sent logs to Wazuh in real time  
-- Built a custom detection rule  
-- Verified alerts based on attacker behavior  
+- Forwarded logs into Wazuh in real time  
+- Built and tested a custom detection rule  
+- Verified alert generation based on attacker behavior  
+
+This project demonstrates my ability to simulate attacks, analyze logs, and build detections within a SIEM environment.
 
 ---
 
@@ -137,8 +139,9 @@ Finally, I ran commands again on the honeypot and confirmed that Wazuh generated
 - SIEM monitoring (Wazuh)  
 - Log ingestion and analysis  
 - Detection rule creation  
+- Security event investigation  
 - Linux command line  
-- Basic threat detection  
+- Honeypot deployment  
 - Troubleshooting services and connectivity  
 
 ---
