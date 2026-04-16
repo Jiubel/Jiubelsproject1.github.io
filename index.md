@@ -6,81 +6,150 @@ title: Home SOC Lab
 # Jiubel's Home SOC Lab (Wazuh + Cowrie Honeypot)
 
 ## Overview
-This project focuses on building a home SOC lab to simulate attacker activity and observe how it is captured, ingested, and analyzed within a SIEM. It demonstrates the basic workflow of attack simulation, log collection, alerting, and investigation.
+This project focuses on building a home SOC lab to simulate attacker activity and understand how it is captured, ingested, and detected inside a SIEM.
+
+Instead of just installing tools, I built a full workflow where I could generate activity, collect logs, and create detections based on real data.
+
+---
 
 ## Tools Used
-- Wazuh
-- Cowrie
+- Wazuh (SIEM / log analysis)
+- Cowrie (SSH honeypot)
 - Oracle VM VirtualBox
 - Ubuntu Linux
 
+---
+
 ## Lab Setup
-The lab was built using Oracle VM VirtualBox with multiple virtual machines to simulate a basic SOC environment. Wazuh was configured as the central SIEM for log collection and analysis, while Cowrie was deployed as an SSH honeypot to capture and monitor attacker activity.
+The lab consists of two virtual machines:
+
+- **Wazuh VM** – acts as the SIEM for collecting and analyzing logs  
+- **Cowrie VM** – acts as an SSH honeypot to capture attacker activity  
+
+The Cowrie system forwards logs to Wazuh using the Wazuh agent, allowing centralized monitoring and alerting.
+
+![Lab Architecture](screenshots/01-lab-architecture.png)
+
+---
 
 ## What I Did
-- Set up a virtual SOC lab using Oracle VM VirtualBox
-- Installed and configured Wazuh for log monitoring and alerting
-- Simulated failed login attempts to generate authentication logs
-- Verified detection of suspicious activity in Wazuh
-- Deployed Cowrie honeypot to capture attacker interactions
-- Simulated attacker access via SSH and executed commands
-- Analyzed honeypot activity and alerts within the Wazuh dashboard
+- Built a virtual SOC lab using VirtualBox  
+- Deployed Wazuh as a centralized SIEM  
+- Deployed Cowrie as an SSH honeypot  
+- Simulated attacker activity over SSH  
+- Configured log forwarding from Cowrie to Wazuh  
+- Created a custom detection rule for command execution  
+- Validated alerts using real attack simulations  
+
+---
 
 ## Implementation
 
-### 1. Virtual Lab Setup
-Created virtual machines in Oracle VM VirtualBox to build the SOC environment.
+### 1. Wazuh Deployment
+Installed and verified Wazuh was running through the dashboard.
 
-![VirtualBox Setup](screenshots/soc-lab-virtualbox-overview.png)
+![Wazuh Dashboard](screenshots/02-wazuh-dashboard-overview.png)
 
-### 2. Wazuh Installation
-Installed Wazuh using the official script and confirmed it was working through the dashboard.
+---
 
-![Wazuh Installation](screenshots/wazuh-installation.png)
+### 2. Cowrie Honeypot Deployment
+Installed and started Cowrie to simulate a vulnerable SSH service.
 
-![Wazuh Dashboard](screenshots/wazuh-dashboard-initial.png)
+![Cowrie Running](screenshots/03-cowrie-honeypot-running.png)
 
-### 3. Failed Login Simulation
-Generated failed authentication attempts using the `su wazuh` command to simulate suspicious login behavior.
+---
 
-![Failed Login Attempts](screenshots/failed_su_authentication_attempts.png)
+### 3. Attack Simulation
+Connected to the honeypot over SSH and executed commands to simulate attacker behavior.
 
-### 4. Detection in Wazuh
-Observed that Wazuh detected the failed login attempts and generated alerts related to authentication failures.
+Example:
+ssh -p 2222 root@localhost  
+whoami  
+exit  
 
-![Wazuh Detection](screenshots/wazuh_failed_login_detection.png)
+![SSH Attack Simulation](screenshots/04-ssh-attack-simulation.png)
 
-### 5. Cowrie Honeypot Setup
-Configured and started the Cowrie SSH honeypot to capture attacker interactions.
+---
 
-![Cowrie Startup](screenshots/cowrie_honeypot_startup.png)
+### 4. Log Generation (Cowrie)
+Verified that Cowrie captured the attacker commands in its JSON log file.
 
-### 6. SSH Attack Simulation
-Connected to the honeypot via SSH and executed commands to simulate attacker behavior.
+![Cowrie Logs](screenshots/05-cowrie-raw-logs.png)
 
-**Commands used:**
-- `ssh root@localhost -p 2222`
-- `whoami`
+---
 
-![SSH Attack](screenshots/cowrie_ssh_attack_simulation.png)
+### 5. Wazuh Agent Configuration
+Installed the Wazuh agent on the Cowrie VM and confirmed it was running.
 
-### 7. Wazuh Monitoring Honeypot Activity
-Verified that Wazuh detected honeypot activity including login sessions and command execution.
+![Wazuh Agent Running](screenshots/06-wazuh-agent-running.png)
 
-![Wazuh Cowrie Detection](screenshots/wazuh_cowrie_activity_detection.png)
+---
+
+### 6. Log Ingestion Setup
+Configured Wazuh to monitor Cowrie logs using a localfile entry.
+
+<localfile>  
+  <log_format>json</log_format>  
+  <location>/home/cowrie/cowrie/var/log/cowrie/cowrie.json</location>  
+</localfile>  
+
+![Log Ingestion Config](screenshots/07-wazuh-log-ingestion-config.png)
+
+---
+
+### 7. Log Ingestion Verification
+Confirmed that Cowrie logs were successfully ingested into Wazuh.
+
+![Wazuh Events](screenshots/08-wazuh-events-ingested.png)
+
+---
+
+### 8. Custom Detection Rule
+Created a custom Wazuh rule to detect command execution in the honeypot.
+
+<rule id="100201" level="5">  
+  <decoded_as>json</decoded_as>  
+  <field name="eventid">^cowrie\.command\.input$</field>  
+  <description>Cowrie command executed: $(input)</description>  
+</rule>  
+
+![Custom Rule](screenshots/09-custom-detection-rule.png)
+
+---
+
+### 9. Detection Testing
+Used wazuh-logtest to confirm the rule correctly detects and parses events.
+
+![Rule Testing](screenshots/10-rule-testing-wazuh-logtest.png)
+
+---
+
+### 10. Alert Validation
+Executed commands again and confirmed Wazuh generated alerts based on the custom rule.
+
+![Alert Triggered](screenshots/11-detection-alert-triggered.png)
+
+---
 
 ## Results
-- Generated and detected failed login attempts
-- Captured attacker activity through a honeypot
-- Verified alerting and log visibility in Wazuh
-- Demonstrated a full attack-to-detection workflow
+- Simulated attacker activity using SSH  
+- Captured commands using a honeypot  
+- Forwarded logs into a SIEM in real time  
+- Created and tested a custom detection rule  
+- Verified alert generation based on attacker behavior  
+
+---
 
 ## Skills Demonstrated
-- SIEM monitoring
-- Log analysis
-- Alert investigation
-- Linux command line
-- Honeypot deployment
+- SIEM monitoring (Wazuh)  
+- Log ingestion and analysis  
+- Detection rule creation  
+- Security event investigation  
+- Linux command line  
+- Honeypot deployment  
+- Troubleshooting system services  
+
+---
 
 ## Project Link
 [View the GitHub Repository](https://github.com/Jiubel/Jiubel-s-Home-SOC-Lab)
