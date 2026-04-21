@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,28 +7,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
-      background-color: #0d1117;
-      color: #c9d1d9;
-      font-family: monospace;
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
+      background: #eef2f7;
+      color: #1f2937;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 32px 20px;
+      line-height: 1.7;
     }
-    a {
-      color: #58a6ff;
-    }
+
     h1, h2, h3 {
-      color: #58a6ff;
+      color: #0f172a;
+      letter-spacing: -0.02em;
     }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      margin-top: 2rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    p, li {
+      color: #374151;
+    }
+
+    a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
     img {
+      display: block;
       max-width: 100%;
-      margin: 10px 0;
+      margin: 1.5rem auto;
+      border-radius: 14px;
+      border: 1px solid #d1d5db;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #d1d5db;
+      margin: 2rem 0;
+    }
+
+    ul {
+      padding-left: 1.25rem;
+    }
+
+    .page-shell {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      padding: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 20px 14px;
+      }
+
+      .page-shell {
+        padding: 1.25rem;
+      }
+
+      h1 {
+        font-size: 1.65rem;
+      }
     }
   </style>
 </head>
 <body>
-
-{{ content }}
-
+  <div class="page-shell">
+    {{ content }}
+  </div>
 </body>
 </html>
